@@ -13,7 +13,7 @@ void printMatrix(double ** matrix, int n) {
 	printf("\n");
 }
 
-double ** serial_MM(double ** matrix1, double **matrix2, size_t n){
+double ** serialMM(double ** matrix1, double **matrix2, size_t n){
 
 	double **res = (double **)malloc(n * sizeof(double *));
 	for (size_t i = 0; i < n; ++i) {
@@ -38,7 +38,7 @@ double ** serial_MM(double ** matrix1, double **matrix2, size_t n){
 
 }
 
-double ** naive_para_MM(double ** matrix1, double **matrix2, size_t n){
+double ** naiveParaMM(double ** matrix1, double **matrix2, size_t n){
 
 	double **res = (double **)malloc(n * sizeof(double *));
 	for (size_t i = 0; i < n; ++i) {
@@ -68,47 +68,12 @@ double ** naive_para_MM(double ** matrix1, double **matrix2, size_t n){
         }  
     }
 
-/*
-	double total = 0.0;
-
-	#pragma omp parallel num_threads(4)
-	{
-		int thread_num = omp_get_num_threads();
-		int thread_id = omp_get_thread_num();
-		long chunk = (long)(n / thread_num);
-		
-		//#pragma omp parallel for num_threads(4)
-		for (size_t i  = thread_id * chunk; i < (thread_id + 1) * chunk; ++i) {
-			for (size_t j  = thread_id * chunk; j < (thread_id + 1) * chunk; ++j) {
-				for (size_t k  = thread_id * chunk; k < (thread_id + 1) * chunk; ++k) {
-
-
-
-				}
-			}
-		}
-
-
-
-
-			#pragma omp for reduction(+:total) 
-			for (unsigned long j  = thread_id * chunk; j < (thread_id + 1) * chunk; ++j) {
-				total += matrix[i][j] * vec[j];
-			}
-
-			res[i] = total;
-			total = 0;
-
-		}
-	
-	}
-*/
 	return res;
 
 }
 
 
-double ** para_MM(double ** matrix1, double **matrix2, size_t n, int block_size){
+double ** paraMM(double ** matrix1, double **matrix2, size_t n, int block_size){
 
 	double **res = (double **)malloc(n * sizeof(double *));
 	for (size_t i = 0; i < n; ++i) {
@@ -123,6 +88,7 @@ double ** para_MM(double ** matrix1, double **matrix2, size_t n, int block_size)
 
 	block_size  = 4;
 
+	#pragma omp parallel for num_threads(4) collapse(2)
 	for (size_t i = 0; i < n; i += block_size) {
 
 		for (size_t j = 0; j < n; j += block_size) {
@@ -134,7 +100,7 @@ double ** para_MM(double ** matrix1, double **matrix2, size_t n, int block_size)
 
 					for (size_t k = 0; k < n; ++k) {
 
-						#pragma omp critical
+						//#pragma omp critical
 						res[i + x][j + y] += matrix1[i + x][k] * matrix2[k][j + y];
 					
 					}
@@ -171,22 +137,22 @@ int main (int argc, char *argv[]) {
 	}
 
 	clock_t start = clock();
-	double ** res_sel = serial_MM(matrix1, matrix2, n);
-	printMatrix(res_sel, 20);
+	double ** res_sel = serialMM(matrix1, matrix2, n);
+	printMatrix(res_sel, 4);
 	clock_t end = clock();
 	float seconds = (float)(end - start) / CLOCKS_PER_SEC;
 	printf("serial time %f \n" , seconds);
 
 	start = clock();
-	double ** res_para_naive = naive_para_MM(matrix1, matrix2, n);
-	printMatrix(res_para_naive, 20);
+	double ** res_para_naive = naiveParaMM(matrix1, matrix2, n);
+	printMatrix(res_para_naive, 4);
 	end = clock();
 	seconds = (float)(end - start) / CLOCKS_PER_SEC;
 	printf("naive parallel time %f \n" , seconds);
 
 	start = clock();
-	double ** res_para = para_MM(matrix1, matrix2, n, 4);
-	printMatrix(res_para, 20);
+	double ** res_para = paraMM(matrix1, matrix2, n, 4);
+	printMatrix(res_para, 4);
 	end = clock();
 	seconds = (float)(end - start) / CLOCKS_PER_SEC;
 	printf("parallel time %f \n" , seconds);
