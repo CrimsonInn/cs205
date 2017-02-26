@@ -53,7 +53,7 @@ double ** naiveParaMM(double ** matrix1, double **matrix2, size_t n){
 
 	size_t i, j, k;
 
-	#pragma omp parallel shared(matrix1, matrix2, res) private(i, j, k) num_threads(4)
+	#pragma omp parallel shared(matrix1, matrix2, res) private(i, j, k) //num_threads(4)
     {  
         #pragma omp for 
         for(i = 0; i < n; ++i)  
@@ -88,7 +88,8 @@ double ** paraMM(double ** matrix1, double **matrix2, size_t n, int block_size){
 
 	block_size  = 4;
 
-	#pragma omp parallel for num_threads(4) collapse(2)
+	//#pragma omp parallel for num_threads(4) collapse(2)
+	#pragma omp parallel for collapse(2)
 	for (size_t i = 0; i < n; i += block_size) {
 
 		for (size_t j = 0; j < n; j += block_size) {
