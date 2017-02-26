@@ -93,7 +93,7 @@ double ** paraMM(double ** matrix1, double **matrix2, size_t n, int block_size){
 
 		for (size_t j = 0; j < n; j += block_size) {
 
-			#pragma omp parallel for collapse(2)
+			//#pragma omp parallel for collapse(2)
 			for (size_t x = 0; x < block_size; ++x) {
 
 				for (size_t y = 0; y < block_size; ++y) {
