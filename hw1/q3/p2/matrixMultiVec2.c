@@ -7,23 +7,33 @@
 
 #define GET_ARRAY_LEN(array,len) {len = (sizeof(array) / sizeof(array[0]));}
 
-void serialMatrixMultiVec(char **matrix, const char *vec, long long *res, size_t n) {
+long long *serialMatrixMultiVec(char **matrix, const char *vec, size_t n) {
+
+	long long *res = malloc(n * sizeof(long long));
+
+	for (size_t i = 0; i < n; i++){
+		res[i] = 0;
+	}
 
 	for (size_t i = 0; i < n; i++){
 		for (size_t j = 0; j < n; j++){
 			res[i] += matrix[i][j] * vec[j];
 		}
 	}
-	return ;
+	return res;
 
 }
 
 
-void optimalMatrixMultiVec(char **matrix, const char *vec, long long *res, size_t n) {
+long long  *optimalMatrixMultiVec(char **matrix, const char *vec, size_t n) {
+	
+	long long *res = malloc(n * sizeof(long long));
+
+	for (size_t i = 0; i < n; i++){
+		res[i] = 0;
+	}
 
 	long long total = 0;
-
-	omp_set_nested(1);
 
 	#pragma omp parallel for //num_threads(4)
 	for (size_t i = 0; i < n; i++) {
@@ -34,10 +44,16 @@ void optimalMatrixMultiVec(char **matrix, const char *vec, long long *res, size_
 		res[i] = total;
 		total = 0;
 	}
-	return ;
+	return res;
 }
 
-void costOptimalMatrixMultiVec(char **matrix, const char *vec, long long *res, size_t n) {
+long long  *costOptimalMatrixMultiVec(char **matrix, const char *vec, size_t n) {
+	
+	long long *res = malloc(n * sizeof(long long));
+
+	for (size_t i = 0; i < n; i++){
+		res[i] = 0;
+	}
 
 	long long total = 0;
 
@@ -50,9 +66,49 @@ void costOptimalMatrixMultiVec(char **matrix, const char *vec, long long *res, s
 		total = 0;
 	}
 
-	return ;
+	return res;
 }
 
+/*
+ * still have bugs in dividing m * m chunk
+ */
+/*
+long long *cost_optimal_MatrixMulti2(char **matrix, const char *vec, size_t n) {
+
+	long long *res = malloc(n * sizeof(long long));
+
+	for (size_t i = 0; i < n; ++i){
+		res[i] = 0;
+	}
+
+	long long total = 0;
+	//unsigned int i;
+
+	#pragma omp parallel
+	{
+		int thread_num = omp_get_num_threads();
+		int thread_id = omp_get_thread_num();
+		long chunk = (long)(n / thread_num);
+		
+		#pragma omp for collapse(2)
+		for (size_t i  = thread_id * chunk; i < (thread_id + 1) * chunk; ++i){
+			
+			//#pragma omp parallel for //reduction(+:total) 
+			for (size_t j  = thread_id * chunk; j < (thread_id + 1) * chunk; ++j) {
+				res[i] += matrix[i][j] * vec[j];
+				// += total;
+			}
+			
+			//total = 0;
+
+		}
+	
+	}
+
+	return res;
+
+}
+*/
 
 void printRes(long long * nums, size_t n) {
 	for (size_t i = 0; i < n; ++i) {
@@ -79,9 +135,8 @@ int main (int argc, char *argv[]) {
 		}
 		char *vec = malloc(n * sizeof(char));
 
-		long long *res_sel = malloc(n * sizeof(long long));
-		long long *res_cost = malloc(n * sizeof(long long));
-		long long *res_para = malloc(n * sizeof(long long));
+		long long *res = malloc(n * sizeof(long long));
+
 		//long long *res_sel, *res_para;
 
 		#pragma omp parallel for
@@ -94,29 +149,27 @@ int main (int argc, char *argv[]) {
 			vec[i] = 1;
 		}
 		for (size_t i = 0; i < n; i++){
-			res_sel[i] = 0;
-			res_cost[i] = 0;
-			res_para[i] = 0;
+			res[i] = 0;
 		}
 
 		printf("Size N = %d\n", powers[p]);
 
 		clock_t start = clock();
-		serialMatrixMultiVec(matrix, vec, res_sel, n);
+		long long *res_sel = serialMatrixMultiVec(matrix, vec, n);
 		//printRes(res_sel, 20);
 		clock_t end = clock();
 		float seconds = (float)(end - start) / CLOCKS_PER_SEC;
 		printf(" - Serial time: %f \n" , seconds);
 
 		start = clock();
-		optimalMatrixMultiVec(matrix, vec,res_para, n);
+		long long *res_para = optimalMatrixMultiVec(matrix, vec, n);
 		//printRes(res_para, 20);
 		end = clock();
 		seconds = (float)(end - start) / CLOCKS_PER_SEC;
 		printf(" - Parallel time: %f \n" , seconds);
 
 		start = clock();
-		costOptimalMatrixMultiVec(matrix, vec, res_cost, n);
+		long long *res_cost = costOptimalMatrixMultiVec(matrix, vec, n);
 		//printRes(res_cost, 20);
 		end = clock();
 		seconds = (float)(end - start) / CLOCKS_PER_SEC;
