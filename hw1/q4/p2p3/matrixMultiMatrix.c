@@ -65,23 +65,26 @@ void paraMM(double ** matrix1, double **matrix2, double **res, size_t n, int blo
 
 		for (size_t j = 0; j < n; j += block_size) {
 
-			//#pragma omp parallel for collapse(2)
+
 			for (size_t x = 0; x < block_size; ++x) {
 
 				for (size_t y = 0; y < block_size; ++y) {
-
+					double temp=0.0;
 					for (size_t k = 0; k < n; ++k) {
 						//#pragma omp critical
-						res[i + x][j + y] += matrix1[i + x][k] * matrix2[k][j + y];
+						temp += matrix1[i + x][k] * matrix2[k][j + y];
 					
 					}
+					res[i + x][j + y]=temp;
 				}
 			}
+			
 		}
 	}
 
 	return ;
 }
+
 
 int main (int argc, char *argv[]) {
 
@@ -169,6 +172,9 @@ int main (int argc, char *argv[]) {
 		end = clock();
 		seconds = (float)(end - start) / CLOCKS_PER_SEC;
 		printf(" - parallel time %f \n" , seconds);
+
+		free(matrix1);
+		free(matrix2);
 
 		printf("\n");
 
