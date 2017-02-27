@@ -101,26 +101,23 @@ int main (int argc, char *argv[]) {
 
 		printf("Size N = %d\n", powers[p]);
 
-		clock_t start = clock();
+		double start2 = omp_get_wtime();
 		serialMatrixMultiVec(matrix, vec, res_sel, n);
 		//printRes(res_sel, 20);
-		clock_t end = clock();
-		float seconds = (float)(end - start) / CLOCKS_PER_SEC;
-		printf(" - Serial time: %f \n" , seconds);
+		double end2 = omp_get_wtime();
+		printf(" - Serial time: %f \n" , end2 - start2);
 
-		start = clock();
+		start2 = omp_get_wtime();
 		optimalMatrixMultiVec(matrix, vec,res_para, n);
 		//printRes(res_para, 20);
-		end = clock();
-		seconds = (float)(end - start) / CLOCKS_PER_SEC;
-		printf(" - Parallel time: %f \n" , seconds);
+		end2 = omp_get_wtime();
+		printf(" - Parallel time: %f \n" , end2 - start2);
 
-		start = clock();
+		start2 = omp_get_wtime();
 		costOptimalMatrixMultiVec(matrix, vec, res_cost, n);
 		//printRes(res_cost, 20);
-		end = clock();
-		seconds = (float)(end - start) / CLOCKS_PER_SEC;
-		printf(" - Cost opt time: %f \n" , seconds);
+		end2 = omp_get_wtime();
+		printf(" - Cost opt time: %f \n" , end2 - start2);
 
 		printf("\n");
 

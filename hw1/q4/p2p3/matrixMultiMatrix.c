@@ -151,26 +151,23 @@ int main (int argc, char *argv[]) {
 		printf("Block size: %d\n", num_blocks);
 		printf("Matrix size: %d\n", powers[p]);
 
-		clock_t start = clock();
+		double start2 = omp_get_wtime();
 		serialMM(matrix1, matrix2, res_sel, n);
 		//printMatrix(res_sel, 4);
-		clock_t end = clock();
-		float seconds = (float)(end - start) / CLOCKS_PER_SEC;
-		printf(" - serial time %f \n" , seconds);
+		double end2 = omp_get_wtime();
+		printf(" - serial time: %f \n" , end2 - start2);
 
-		start = clock();
+		start2 = omp_get_wtime();
 		naiveParaMM(matrix1, matrix2, res_para_naive, n);
 		//printMatrix(res_para_naive, 4);
-		end = clock();
-		seconds = (float)(end - start) / CLOCKS_PER_SEC;
-		printf(" - naive parallel time %f \n" , seconds);
+		end2 = omp_get_wtime();
+		printf(" - naive parallel time %f \n" , end2 - start2);
 
-		start = clock();
+		start2 = omp_get_wtime();
 		paraMM(matrix1, matrix2, res_para, n, num_blocks);
 		//printMatrix(res_para, 4);
-		end = clock();
-		seconds = (float)(end - start) / CLOCKS_PER_SEC;
-		printf(" - parallel time %f \n" , seconds);
+		end2 = omp_get_wtime();
+		printf(" - parallel time %f \n" , end2 - start2);
 
 		free(matrix1);
 		free(matrix2);

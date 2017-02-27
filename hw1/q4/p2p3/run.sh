@@ -2,7 +2,7 @@
 
 gcc-6 -O0 -fopenmp matrixMultiMatrix.c checkCache.c -o mmm.out -lm
 
-thread_list='2 4'
+thread_list='2 4 8'
 
 for thread in $thread_list
 do
