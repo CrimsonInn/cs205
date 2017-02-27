@@ -21,11 +21,8 @@ long long serial_sum(const char* a,size_t n);
 long long time_optimal_sum(const char* a,size_t n);
 long long cost_optimal_sum(const char* a,size_t n);
 
-int ** create_matrix(int nrows,int ncolumns);
-
-
 int main (int argc, char *argv[]) {
-
+ test_sum();
 }
 
 int test_sum () {
@@ -122,32 +119,5 @@ long long cost_optimal_sum(const char *a, size_t n){
 
 	}
 	return total;
-}
-//---------------------------------------------------------------------------
-
-int ** create_matrix(int nrows,int ncolumns){
-	int **array;
-	const size_t row_pointers_bytes = nrows * sizeof *array;
-	const size_t row_elements_bytes = ncolumns * sizeof **array;
-	array = malloc(row_pointers_bytes + nrows * row_elements_bytes);
-
-	size_t i;
-	int * const data = array + nrows;
-	for(i = 0; i < nrows; i++)
-	  array[i] = data + i * ncolumns;
-
-	return array;
-}
-
-long long * toptimal_matrix_time_vector(){
-	long long * output;
-
-	return output;
-}
-
-long long * coptimal_matrix_time_vector(){
-	long long * output;
-
-	return output;
 }
 
