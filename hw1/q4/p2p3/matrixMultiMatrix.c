@@ -104,7 +104,7 @@ int main (int argc, char *argv[]) {
 
 		size_t n = (1 << powers[p]);
 
-		num_blocks = cacheTemp > n ? n : cacheTemp;
+		num_blocks = 256 * 2 >= n ? n / 8 : 256;
 
 		//init input matrix
 		double **matrix1 = (double **)malloc(n * sizeof(double *));
