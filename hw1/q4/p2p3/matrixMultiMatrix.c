@@ -88,27 +88,26 @@ void paraMM(double ** matrix1, double **matrix2, double **res, size_t n, int blo
 
 int main (int argc, char *argv[]) {
 
-	int powers[3] = {6, 10, 16};
+	int powers[3] = {4, 8, 10};
 	int len = 0;
 	GET_ARRAY_LEN(powers,len);
 
-	int temp = calCache();
+	int cacheTemp = calCache();
 	int num_blocks = 0;
 
 	for(unsigned int i = 31; i >= 0; --i){
 		unsigned int flag = (1 << i);
-		if(flag & temp){
-			num_blocks = flag & temp;
+		if(flag & cacheTemp){
+			cacheTemp = flag & cacheTemp;
 			break;
 		}
 	}
 
-	for (int p = 0; p < 3; ++p){
+	for (int p = 0; p < len; ++p){
 
 		size_t n = (1 << powers[p]);
 
-		num_blocks = num_blocks > n ? n : num_blocks;
-
+		num_blocks = 256 * 2 >= n ? n / 8 : 256;
 
 		//init input matrix
 		double **matrix1 = (double **)malloc(n * sizeof(double *));
