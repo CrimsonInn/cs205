@@ -39,23 +39,17 @@ int test_sum () {
 	 a[i]=1;
 	}
 
-	clock_t start = clock();
+	double start = omp_get_wtime();
 	printf("serial sum: %ll" , serial_sum(a,n));
-	clock_t end = clock();
-	float seconds = (float)(end - start) / CLOCKS_PER_SEC;
-	printf(" time %f \n" , seconds);
+	printf(" time %f \n" , omp_get_wtime()-start);
 
-	start = clock();
+	start = omp_get_wtime();
 	printf("parallel sum: %ll" , time_optimal_sum(a,n));
-	end = clock();
-	seconds = (float)(end - start) / CLOCKS_PER_SEC;
-	printf(" time %f \n" , seconds);
+	printf(" time %f \n" , omp_get_wtime()-start);
 
-	start = clock();
+	start = omp_get_wtime();
 	printf("cost optimal sum: %ll" , cost_optimal_sum(a,n));
-	end = clock();
-	seconds = (float)(end - start) / CLOCKS_PER_SEC;
-	printf(" time %f" , seconds);
+	printf(" time %f \n" , omp_get_wtime()-start);
 
 	free(a);
 	return 0;
@@ -93,7 +87,7 @@ long long serial_sum(const char *a, size_t n){
 long long time_optimal_sum(const char *a, size_t n){
 	long long total=0.;
 	size_t i;
-#pragma omp parallel for reduction(+:total) num_threads(4)
+#pragma omp parallel for reduction(+:total) //num_threads(4)
 		for(i=0;i<n;i++){
 			total+=a[i];
 		}
@@ -108,7 +102,7 @@ long long cost_optimal_sum(const char *a, size_t n){
 	//int threads = (int) (n/logn);
 	//printf("num threads: ", threads);
 
-#pragma omp parallel reduction(+:total) private(i) num_threads(4)
+#pragma omp parallel reduction(+:total) private(i) //num_threads(4)
 	{
 	int thread_num = omp_get_num_threads();
 	int thread_id = omp_get_thread_num();
