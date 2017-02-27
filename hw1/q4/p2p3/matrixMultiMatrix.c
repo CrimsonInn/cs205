@@ -4,6 +4,10 @@
 #include <time.h>
 #include <math.h>
 #include <stddef.h>
+#include "checkCache.h"
+
+#define GET_ARRAY_LEN(array,len) {len = (sizeof(array) / sizeof(array[0]));}
+
 
 void printMatrix(double ** matrix, int n) {
 	
@@ -13,18 +17,7 @@ void printMatrix(double ** matrix, int n) {
 	printf("\n");
 }
 
-double ** serialMM(double ** matrix1, double **matrix2, size_t n){
-
-	double **res = (double **)malloc(n * sizeof(double *));
-	for (size_t i = 0; i < n; ++i) {
-		res[i] = (double *)malloc(n * sizeof(double));
-	}
-	
-	for (size_t i = 0; i < n; ++i) {
-		for (size_t j = 0; j < n; ++j) {
-			res[i][j] = 0;
-		}
-	}
+void serialMM(double ** matrix1, double **matrix2, double **res, size_t n){
 
 	for (size_t i = 0; i < n; ++i) {
 		for (size_t j = 0; j < n; ++j) {
@@ -34,23 +27,12 @@ double ** serialMM(double ** matrix1, double **matrix2, size_t n){
 		}
 	}
 
-	return res;
+	return ;
 
 }
 
-double ** naiveParaMM(double ** matrix1, double **matrix2, size_t n){
-
-	double **res = (double **)malloc(n * sizeof(double *));
-	for (size_t i = 0; i < n; ++i) {
-		res[i] = (double *)malloc(n * sizeof(double));
-	}
+void naiveParaMM(double ** matrix1, double **matrix2, double **res, size_t n){
 	
-	for (size_t i = 0; i < n; ++i) {
-		for (size_t j = 0; j < n; ++j) {
-			res[i][j] = 0;
-		}
-	}
-
 	size_t i, j, k;
 
 	#pragma omp parallel shared(matrix1, matrix2, res) private(i, j, k) //num_threads(4)
@@ -68,25 +50,14 @@ double ** naiveParaMM(double ** matrix1, double **matrix2, size_t n){
         }  
     }
 
-	return res;
+	return ;
 
 }
 
 
-double ** paraMM(double ** matrix1, double **matrix2, size_t n, int block_size){
+void paraMM(double ** matrix1, double **matrix2, double **res, size_t n, int block_size){
 
-	double **res = (double **)malloc(n * sizeof(double *));
-	for (size_t i = 0; i < n; ++i) {
-		res[i] = (double *)malloc(n * sizeof(double));
-	}
-	
-	for (size_t i = 0; i < n; ++i) {
-		for (size_t j = 0; j < n; ++j) {
-			res[i][j] = 0;
-		}
-	}
-
-	block_size  = 4;
+	//block_size  = 256;
 
 	//#pragma omp parallel for num_threads(4) collapse(2)
 	#pragma omp parallel for collapse(2)
@@ -100,7 +71,6 @@ double ** paraMM(double ** matrix1, double **matrix2, size_t n, int block_size){
 				for (size_t y = 0; y < block_size; ++y) {
 
 					for (size_t k = 0; k < n; ++k) {
-
 						//#pragma omp critical
 						res[i + x][j + y] += matrix1[i + x][k] * matrix2[k][j + y];
 					
@@ -110,53 +80,99 @@ double ** paraMM(double ** matrix1, double **matrix2, size_t n, int block_size){
 		}
 	}
 
-	return res;
+	return ;
 }
-
 
 int main (int argc, char *argv[]) {
 
-	size_t n = pow(2,10);
+	int powers[3] = {6, 10, 16};
+	int len = 0;
+	GET_ARRAY_LEN(powers,len);
 
-	//init input matrix
-	double **matrix1 = (double **)malloc(n * sizeof(double *));
-	for (size_t i = 0; i < n; ++i) {
-		matrix1[i] = (double *)malloc(n * sizeof(double));
-	}
+	int temp = calCache();
+	int num_blocks = 0;
 
-	double **matrix2 = (double **)malloc(n * sizeof(double *));
-	for (size_t i = 0; i < n; ++i) {
-		matrix2[i] = (double *)malloc(n * sizeof(double));
-	}
-
-	#pragma omp parallel for
-	for (size_t i = 0; i < n; ++i) {
-		for (size_t j = 0; j < n; ++j) {
-			matrix1[i][j] = 1;
-			matrix2[i][j] = 2;
+	for(unsigned int i = 31; i >= 0; --i){
+		unsigned int flag = (1 << i);
+		if(flag & temp){
+			num_blocks = flag & temp;
+			break;
 		}
 	}
 
-	clock_t start = clock();
-	double ** res_sel = serialMM(matrix1, matrix2, n);
-	printMatrix(res_sel, 4);
-	clock_t end = clock();
-	float seconds = (float)(end - start) / CLOCKS_PER_SEC;
-	printf("serial time %f \n" , seconds);
+	for (int p = 0; p < 3; ++p){
 
-	start = clock();
-	double ** res_para_naive = naiveParaMM(matrix1, matrix2, n);
-	printMatrix(res_para_naive, 4);
-	end = clock();
-	seconds = (float)(end - start) / CLOCKS_PER_SEC;
-	printf("naive parallel time %f \n" , seconds);
+		size_t n = (1 << powers[p]);
 
-	start = clock();
-	double ** res_para = paraMM(matrix1, matrix2, n, 4);
-	printMatrix(res_para, 4);
-	end = clock();
-	seconds = (float)(end - start) / CLOCKS_PER_SEC;
-	printf("parallel time %f \n" , seconds);
+		num_blocks = num_blocks > n ? n : num_blocks;
+
+
+		//init input matrix
+		double **matrix1 = (double **)malloc(n * sizeof(double *));
+		for (size_t i = 0; i < n; ++i) {
+			matrix1[i] = (double *)malloc(n * sizeof(double));
+		}
+
+		double **matrix2 = (double **)malloc(n * sizeof(double *));
+		for (size_t i = 0; i < n; ++i) {
+			matrix2[i] = (double *)malloc(n * sizeof(double));
+		}
+
+		//init result
+		double **res_sel = (double **)malloc(n * sizeof(double *));
+		for (size_t i = 0; i < n; ++i) {
+			res_sel[i] = (double *)malloc(n * sizeof(double));
+		}
+
+		double **res_para_naive = (double **)malloc(n * sizeof(double *));
+		for (size_t i = 0; i < n; ++i) {
+			res_para_naive[i] = (double *)malloc(n * sizeof(double));
+		}
+
+		double **res_para = (double **)malloc(n * sizeof(double *));
+		for (size_t i = 0; i < n; ++i) {
+			res_para[i] = (double *)malloc(n * sizeof(double));
+		}
+
+		#pragma omp parallel for
+		for (size_t i = 0; i < n; ++i) {
+			for (size_t j = 0; j < n; ++j) {
+				matrix1[i][j] = 1;
+				matrix2[i][j] = 2;
+
+				res_sel[i][j] = 0;
+				res_para[i][j] = 0;
+				res_para_naive[i][j] = 0;
+			}
+		}
+
+		printf("Block size: %d\n", num_blocks);
+		printf("Matrix size: %d\n", powers[p]);
+
+		clock_t start = clock();
+		serialMM(matrix1, matrix2, res_sel, n);
+		//printMatrix(res_sel, 4);
+		clock_t end = clock();
+		float seconds = (float)(end - start) / CLOCKS_PER_SEC;
+		printf(" - serial time %f \n" , seconds);
+
+		start = clock();
+		naiveParaMM(matrix1, matrix2, res_para_naive, n);
+		//printMatrix(res_para_naive, 4);
+		end = clock();
+		seconds = (float)(end - start) / CLOCKS_PER_SEC;
+		printf(" - naive parallel time %f \n" , seconds);
+
+		start = clock();
+		paraMM(matrix1, matrix2, res_para, n, num_blocks);
+		//printMatrix(res_para, 4);
+		end = clock();
+		seconds = (float)(end - start) / CLOCKS_PER_SEC;
+		printf(" - parallel time %f \n" , seconds);
+
+		printf("\n");
+
+	}
 
 	return 0;
 }
