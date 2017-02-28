@@ -3,7 +3,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <time.h>
-
+#include <omp.h>
 #include <cblas.h>
 #include <math.h>
 
@@ -13,10 +13,10 @@ int main()
     size_t m, n, k, i, j, l, p, loop;
     size_t LOOP_COUNT;
     double alpha, beta;
-    clock_t time_st, time_end;
+    double time_st, time_end;
     float seconds;
     double gflop;
-    size_t scale[3] = {1<<6, 1<<10, 1<<16};
+    size_t scale[3] = {1<<6, 1<<10, 1<<12};
 
     for (p = 0; p < 3; ++p){
       if (p == 0) LOOP_COUNT = 100;
@@ -54,29 +54,31 @@ int main()
       }
 
       printf("Problem Size n=%lu\n", scale[p]); 
-      time_st = clock();
-      for (loop = 0; loop < LOOP_COUNT; loop++) {
-        for (i = 0; i < m; i++) {
-          for (j = 0; j < n; j++) {
-            for (l = 0; l < k; l++) {
-              C[i*n + j] += A[i*k + l] * B[l*n + j];
-            }
-          }
-        }
-      }
-      time_end = clock();
+      time_st = omp_get_wtime();
+      //for (loop = 0; loop < LOOP_COUNT; loop++) {
+      //  for (i = 0; i < m; i++) {
+      //    for (j = 0; j < n; j++) {
+      //      for (l = 0; l < k; l++) {
+      //        C[i*n + j] += A[i*k + l] * B[l*n + j];
+      //      }
+      //    }
+      //  }
+      //}
+      time_end = omp_get_wtime();
       gflop = (2.0*m*n*k)*1E-9;
-      seconds = (float)(time_end - time_st) / CLOCKS_PER_SEC;
+      seconds = (time_end-time_st);
+      //printf("%f %f\n", gflop, seconds); 
       printf("Naive Version: %.5f GFlop/sec\n", gflop/seconds/LOOP_COUNT); 
   
-      time_st = clock();
+      time_st = omp_get_wtime();
       for (loop = 0; loop < LOOP_COUNT; loop++) {
         cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
                     m, n, k, alpha, A, k, B, n, beta, C, n);
       }
-      time_end = clock();
+      time_end = omp_get_wtime();
       gflop = (2.0*m*n*k)*1E-9;
-      seconds = 1.0*(time_end - time_st) / CLOCKS_PER_SEC;
+      seconds = time_end-time_st;
+      //printf("%f %f\n", gflop, seconds);
       printf("BLAS Version: %.5f GFlop/sec\n", gflop/seconds/LOOP_COUNT); 
   
       free(A);

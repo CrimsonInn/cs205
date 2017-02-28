@@ -1,0 +1,40 @@
+============================
+testing with 32 threads
+Block size: 2
+Matrix size: 4
+ - serial: 0.456703 
+ - naive parallel 0.264974 
+ - parallel 0.102823 
+
+Block size: 32
+Matrix size: 8
+ - serial: 0.338453 
+ - naive parallel 7.593896 
+ - parallel 11.487793 
+
+Block size: 256
+Matrix size: 10
+ - serial: 0.205361 
+ - naive parallel 2.763763 
+ - parallel 4.416598 
+
+============================
+testing with 64 threads
+Block size: 2
+Matrix size: 4
+ - serial: 0.339042 
+ - naive parallel 0.001808 
+ - parallel 0.001802 
+
+Block size: 32
+Matrix size: 8
+ - serial: 0.319874 
+ - naive parallel 5.328055 
+ - parallel 4.601954 
+
+Block size: 256
+Matrix size: 10
+ - serial: 0.206665 
+ - naive parallel 3.676493 
+ - parallel 1.338540 
+

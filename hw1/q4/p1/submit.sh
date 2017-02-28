@@ -14,6 +14,6 @@
 #module load intel-mkl/11.0.0.079-fasrc02
 module load gcc/5.3.0-fasrc01 OpenBLAS/0.2.18-fasrc01
 #icc -mkl blasMatMulti.c -o dgemm
-cc blasMatMulti.c -o dgemm -lopenblas
+cc blasMatMulti.c -o dgemm -lopenblas -fopenmp
 srun -c 8 ./dgemm
 
