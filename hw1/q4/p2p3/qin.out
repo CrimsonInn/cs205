@@ -1,0 +1,96 @@
+============================
+testing with 4 threads
+calculate cache size...
+Found, answer is 0 MB 
+Good size is below 26 
+Block size: 8
+Matrix size: 6
+ - serial time: 0.000600 
+ - GFlop: 0.87384 GFlop/sec
+ - serial block parallel time 0.000587 
+ - GFlop: 0.89251 GFlop/sec
+ - parallel time 0.000181 
+ - GFlop: 2.90252 GFlop/sec
+
+Block size: 32
+Matrix size: 8
+ - serial time: 0.056640 
+ - GFlop: 0.59242 GFlop/sec
+ - serial block parallel time 0.054099 
+ - GFlop: 0.62024 GFlop/sec
+ - parallel time 0.010699 
+ - GFlop: 3.13619 GFlop/sec
+
+Block size: 256
+Matrix size: 10
+ - serial time: 5.723728 
+ - GFlop: 0.37519 GFlop/sec
+ - serial block parallel time 4.601426 
+ - GFlop: 0.46670 GFlop/sec
+ - parallel time 0.994973 
+ - GFlop: 2.15833 GFlop/sec
+
+============================
+testing with 8 threads
+calculate cache size...
+Found, answer is 0 MB 
+Good size is below 104 
+Block size: 8
+Matrix size: 6
+ - serial time: 0.000602 
+ - GFlop: 0.87118 GFlop/sec
+ - serial block parallel time 0.000590 
+ - GFlop: 0.88933 GFlop/sec
+ - parallel time 0.000115 
+ - GFlop: 4.55985 GFlop/sec
+
+Block size: 32
+Matrix size: 8
+ - serial time: 0.051980 
+ - GFlop: 0.64552 GFlop/sec
+ - serial block parallel time 0.049910 
+ - GFlop: 0.67230 GFlop/sec
+ - parallel time 0.005952 
+ - GFlop: 5.63717 GFlop/sec
+
+Block size: 256
+Matrix size: 10
+ - serial time: 6.023471 
+ - GFlop: 0.35652 GFlop/sec
+ - serial block parallel time 4.670869 
+ - GFlop: 0.45976 GFlop/sec
+ - parallel time 0.899548 
+ - GFlop: 2.38729 GFlop/sec
+
+============================
+testing with 12 threads
+calculate cache size...
+Found, answer is 0 MB 
+Good size is below 26 
+Block size: 8
+Matrix size: 6
+ - serial time: 0.000607 
+ - GFlop: 0.86433 GFlop/sec
+ - serial block parallel time 0.000587 
+ - GFlop: 0.89310 GFlop/sec
+ - parallel time 0.001427 
+ - GFlop: 0.36744 GFlop/sec
+
+Block size: 32
+Matrix size: 8
+ - serial time: 0.049088 
+ - GFlop: 0.68355 GFlop/sec
+ - serial block parallel time 0.052615 
+ - GFlop: 0.63774 GFlop/sec
+ - parallel time 0.004540 
+ - GFlop: 7.39105 GFlop/sec
+
+Block size: 256
+Matrix size: 10
+ - serial time: 5.787128 
+ - GFlop: 0.37108 GFlop/sec
+ - serial block parallel time 4.600232 
+ - GFlop: 0.46682 GFlop/sec
+ - parallel time 1.848238 
+ - GFlop: 1.16191 GFlop/sec
+
