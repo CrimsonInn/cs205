@@ -11,7 +11,7 @@
 #SBATCH --job-name="matVecMulti"
 
 module load gcc/6.2.0-fasrc02
-gcc -O0 -fopenmp VectorSum -o mmm.out -lm
+gcc -O0 -fopenmp VectorSum_efficiency_calculation.c -o mmm.out -lm
 
 thread_list='16'
 
