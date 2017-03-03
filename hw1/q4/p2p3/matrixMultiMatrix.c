@@ -116,14 +116,13 @@ void paraMM(double ** matrix1, double **matrix2, double **res, size_t n, int blo
 
 int main (int argc, char *argv[]) {
 
-	int powers[3] = {4, 8, 10};
+	int powers[3] = {6, 8, 10};
 	int len = 0;
 	GET_ARRAY_LEN(powers,len);
 
 	int cacheTemp = calCache();
 	int num_blocks = 0;
 	double gflop;
-
 	for(unsigned int i = 31; i >= 0; --i){
 		unsigned int flag = (1 << i);
 		if(flag & cacheTemp){
@@ -179,19 +178,18 @@ int main (int argc, char *argv[]) {
 
 		printf("Block size: %d\n", num_blocks);
 		printf("Matrix size: %d\n", powers[p]);
-
+		gflop = (2.0 * (double)n * n * n) * 0.000000001;
 		double start2 = omp_get_wtime();
 		serialMM(matrix1, matrix2, res_sel, n);
-		printMatrix(res_sel, 4);
+		//printMatrix(res_sel, 4);
 		double end2 = omp_get_wtime();
-		gflop = (2.0*n*n*n)*1E-9;
 		printf(" - serial time: %f \n" , end2 - start2);
 		printf(" - GFlop: %.5f GFlop/sec\n", gflop/(end2 - start2)); 
 
 
 		start2 = omp_get_wtime();
 		serialBlockMM(matrix1, matrix2, res_para_naive, n, num_blocks);
-		printMatrix(res_para_naive, 4);
+		//printMatrix(res_para_naive, 4);
 		end2 = omp_get_wtime();
 		printf(" - serial block parallel time %f \n" , end2 - start2);
 		printf(" - GFlop: %.5f GFlop/sec\n", gflop/(end2 - start2)); 
@@ -199,7 +197,7 @@ int main (int argc, char *argv[]) {
 
 		start2 = omp_get_wtime();
 		paraMM(matrix1, matrix2, res_para, n, num_blocks);
-		printMatrix(res_para, 4);
+		//printMatrix(res_para, 4);
 		end2 = omp_get_wtime();
 		printf(" - parallel time %f \n" , end2 - start2);
 		printf(" - GFlop: %.5f GFlop/sec\n", gflop/(end2 - start2)); 

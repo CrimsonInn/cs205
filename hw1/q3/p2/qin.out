@@ -1,0 +1,51 @@
+============================
+testing with 4 threads
+Size N = 6
+ - Serial time: 0.000048 
+ - Parallel time: 0.008238 
+ - Cost opt time: 0.000017 
+
+Size N = 10
+ - Serial time: 0.011758 
+ - Parallel time: 0.159228 
+ - Cost opt time: 0.002212 
+
+Size N = 16
+ - Serial time: 26.214830 
+ - Parallel time: 12.323568 
+ - Cost opt time: 5.263605 
+
+============================
+testing with 6 threads
+Size N = 6
+ - Serial time: 0.000048 
+ - Parallel time: 0.031855 
+ - Cost opt time: 0.000023 
+
+Size N = 10
+ - Serial time: 0.012119 
+ - Parallel time: 0.264504 
+ - Cost opt time: 0.002395 
+
+Size N = 16
+ - Serial time: 48.321739 
+ - Parallel time: 17.910105 
+ - Cost opt time: 6.981372 
+
+============================
+testing with 8 threads
+Size N = 6
+ - Serial time: 0.000060 
+ - Parallel time: 0.018850 
+ - Cost opt time: 0.000014 
+
+Size N = 10
+ - Serial time: 0.011837 
+ - Parallel time: 0.184755 
+ - Cost opt time: 0.001135 
+
+Size N = 16
+ - Serial time: 48.208418 
+ - Parallel time: 11.916213 
+ - Cost opt time: 4.458997 
+
