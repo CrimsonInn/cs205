@@ -6,7 +6,7 @@
 #include <math.h>
 #include <string.h>
 
-#define BLOCK_SIZE 8
+#define BLOCK_SIZE 64
 
 void printDeviceProp(const cudaDeviceProp &prop) {
     printf("Device Name : %s.\n", prop.name);
@@ -148,7 +148,7 @@ void matrixMulGPU(float* matrixC,const float *matrixA,const float *matrixB,int c
     cudaEventCreate(&stop);
     cudaEventRecord(start, 0);
     
-    matrixMulGPUKernal1<<<blocks,threads>>>(d_c,d_a,d_b,colsA,rowsA);
+    matrixMulGPUKernal0<<<blocks,threads>>>(d_c,d_a,d_b,colsA,rowsA);
 
     cudaEventRecord(stop, 0);
     cudaEventSynchronize(start);
@@ -191,7 +191,7 @@ int main(int argc, char* argv[]) {
     srand(63);
     printf("\n - BLOCK_SIZE: %d\n", BLOCK_SIZE);
 
-    int N = (1 << 6);
+    int N = (1 << 11);
     int colsA, colsB, colsC, rowsA, rowsB, rowsC;
     colsA = colsB = colsC = rowsA = rowsB = rowsC = N;
 
