@@ -6,7 +6,7 @@
 #include <math.h>
 #include <string.h>
 
-#define BLOCK_SIZE 64
+#define BLOCK_SIZE 16
 
 void printDeviceProp(const cudaDeviceProp &prop) {
     printf("Device Name : %s.\n", prop.name);
@@ -212,7 +212,7 @@ int main(int argc, char* argv[]) {
     
     clock_t tick1 = clock();
     matrixMulCPU(C2,A,B,colsA,rowsA,colsB);
-    printf(" - CPU use Time : %f ms\n",(double)(clock() - tick1)/CLK_TCK);
+    printf(" - CPU use Time : %f ms\n",(double)(clock() - tick1)/CLOCKS_PER_SEC);
 
     // unsigned int timer = 0;
     // cutilCheckError(cutCreateTimer(&timer));
