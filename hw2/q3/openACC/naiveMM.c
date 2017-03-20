@@ -43,6 +43,21 @@ void naiveMM(float ** matrix1, float **matrix2, float **res, size_t n){
     return ;
 }
 
+void tileMM(float ** matrix1, float **matrix2, float **res, size_t n){
+    
+    #pragma acc parallel loop gang vector(32) tile(16,16)
+    for (size_t i = 0; i < n; ++i) {
+        for (size_t j = 0; j < n; ++j) {
+            float temp = 0.0;
+            for (size_t k = 0; k < n; ++k) {
+                temp += matrix1[i][k] * matrix2[k][j];
+            }
+            res[i][j] = temp;
+        }
+    }
+    return ;
+}
+
 int checkError(const float** matrixA, const float** matrixB, size_t n) {
     for (size_t i = 0 ; i < n; ++i) {
         for (size_t j = 0; j < n; ++j) {
@@ -116,12 +131,12 @@ int main() {
 
         //start2 = omp_get_wtime();
         startTime = seconds();
-        naiveMM(matrix1, matrix2, res_para, n);
+        tileMM(matrix1, matrix2, res_para, n);
         endTime = seconds() - startTime;
         //printMatrix(res_para, 4);
         //end2 = omp_get_wtime();
-        printf(" - naive openAcc gflop: %f \n" , gflop/endTime);
-        printf(" - naive openAcc time: %f\n", endTime);
+        printf(" - openAcc gflop: %f \n" , gflop/endTime);
+        printf(" - openAcc time: %f\n", endTime);
         //printf(" - naive time: %f\n", end2 - start2);
 
 
