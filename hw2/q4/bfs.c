@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 
 struct csrMat {
     size_t *A;
@@ -15,7 +16,9 @@ int checkEq(size_t *x, size_t *y, size_t n) {
 void bfs(struct csrMat A, size_t *x, size_t n) {
     size_t *xp = (size_t *) malloc(sizeof(size_t)*n);
     memcpy(xp, x, sizeof(size_t)*n);
+    size_t iter = 0;
     while (1) {
+        iter++;
         for (size_t i = 0;i < n; ++i) {
             for (size_t j=(A.IA)[i]; j < (A.IA)[i+1]; ++j) {
                 if (xp[A.JA[j]] > 0) {
@@ -24,12 +27,13 @@ void bfs(struct csrMat A, size_t *x, size_t n) {
                 }
             }
         }
-        if (checkEq(x, xp, n)) return;
+        if (checkEq(x, xp, n)) break;
         else {
             memcpy(xp, x, sizeof(size_t)*n);
         }
     }
-
+    printf("total iter num=%lu\n", iter);
+    return;
 }
 
 
@@ -88,7 +92,7 @@ int main(int argc, const char * argv[]) {
 
     
     size_t n = 1024;
-    size_t m = 8196;
+    size_t m = 20000;
     size_t *IA = (size_t *) malloc(sizeof(size_t)*(n+1));
     size_t *JA = (size_t *) malloc(sizeof(size_t)*m);
     
@@ -100,12 +104,14 @@ int main(int argc, const char * argv[]) {
     x[0] = 1;
     x[6] = 1;
     
+    clock_t start = clock();
     bfs(A, x, n);
-    for (size_t i=0;i<n;++i) {
-        printf("%lu,", x[i]);
-    }
-    printf("\n");
-
+    clock_t end = clock();
+    printf("elapsed time: %f\n", (double)(end-start)/CLOCKS_PER_SEC);
+//  for (size_t i=0;i<n;++i) {
+//      printf("%lu,", x[i]);
+//  }
+//  printf("\n");
 
     
     return 0;
