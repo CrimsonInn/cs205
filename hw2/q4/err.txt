@@ -1,0 +1,23 @@
+[linhengte1993@rclogin02 q4]$ cat recursive.err
+mycopy:
+      7, Generating Tesla code
+         Generating acc routine seq
+      8, Loop is parallelizable
+PGC-S-0155-Unsupported nested compute construct in compute construct or acc routine  (recursive_acc_wrong.c: 16)
+PGC-S-0155-Accelerator region ignored; see -Minfo messages  (recursive_acc_wrong.c)
+apsp_mul:
+      0, Accelerator region ignored
+     16, Accelerator restriction: invalid loop
+PGC-S-0155-Unsupported nested compute construct in compute construct or acc routine  (recursive_acc_wrong.c: 36)
+PGC-S-0155-Accelerator region ignored; see -Minfo messages  (recursive_acc_wrong.c)
+apsp_add:
+      0, Accelerator region ignored
+     36, Accelerator restriction: invalid loop
+PGC-S-0155-Unsupported nested compute construct in compute construct or acc routine  (recursive_acc_wrong.c: 85)
+PGC-S-0155-Unsupported nested compute construct in compute construct or acc routine  (recursive_acc_wrong.c: 61)
+PGC-S-0155-Accelerator region ignored; see -Minfo messages  (recursive_acc_wrong.c)
+APSP:
+      0, Accelerator region ignored
+     61, Accelerator restriction: invalid loop
+     85, Accelerator restriction: invalid loop
+PGC/x86-64 Linux 16.10-0: compilation completed with severe errors
