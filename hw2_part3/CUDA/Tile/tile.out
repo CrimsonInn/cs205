@@ -1,0 +1,22 @@
+ --- General info --- 
+GPU name: 0 Tesla K40m
+Compute capability:  3.5
+Clock rate:  745000
+ --- Memory info --- 
+Total global mem:  12079136768
+ --- Multiprocessor (MP) Info --- 
+MP count: 15
+Shared mem per MP:  49152
+Registers per MP:  65536
+Threads in warp:  32
+Max threads per block:  1024
+Max thread dimensions:  (1024, 1024, 64)
+Max grid dimensions: (2147483647, 65535, 65535)
+
+ --- Matrix multiplicatoin --- 
+Matrix size n is 1024
+tile_matmul elapsed time is 0.005795 seconds
+Throughput is 370.550195 GFlop/s
+CUBLAS elapsed time is 0.001125 seconds
+Throughput is 1909.376726 GFlop/s
+Max error is 0.000000e+00 percent 

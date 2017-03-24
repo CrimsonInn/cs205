@@ -1,0 +1,9 @@
+Using GPU 0: Tesla K20Xm
+Matrix size is 16384
+Total memory required is 3221.225472 MB
+Total time GPU CUBLAS is 2.922087 sec
+Performance is 3010.208986 GFlop/s
+Total time GPU NAIVE is 81.522751 sec
+Performance is 107.897403 GFlop/s
+Maximum error is 0.000000e+00 percent 
+PASS

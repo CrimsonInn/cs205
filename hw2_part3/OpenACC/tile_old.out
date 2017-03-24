@@ -1,0 +1,6 @@
+ --- Matrix multiplicatoin --- 
+Matrix size n is 1024
+Start tile_matmul_acc
+End tile_matmul_acc
+Elapsed time is 3.195208 sec
+Throughput is 0.672095 GFlop/s
