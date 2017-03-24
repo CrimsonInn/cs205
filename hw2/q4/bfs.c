@@ -19,15 +19,19 @@ struct csrMat {
     size_t *JA;
 };
 
+#pragma acc routine
 int checkEq(size_t *x, size_t *y, size_t n) {
     for (size_t i=0;i<n;++i) {
         if (x[i] != y[i]) return 0;
     }
     return 1;
 }
-
-
-
+#pragma acc routine
+void mycopy(float * to, float * from, size_t num){
+    for (size_t i=0;i<num;i++){
+        to[i]=from[i];
+    }
+}
 void bfs_new(struct csrMat A, size_t *x, size_t n, size_t m){
     size_t *xp = (size_t *) malloc(sizeof(size_t)*n);
     memcpy(xp, x, sizeof(size_t)*n);
@@ -67,7 +71,42 @@ void bfs_new(struct csrMat A, size_t *x, size_t n, size_t m){
     //printf("total iter num=%lu\n", iter);
     return;
 }
+
+
+
 void bfs_fast(struct csrMat A, size_t *x, size_t n,size_t m) {
+    size_t *xp = (size_t *) malloc(sizeof(size_t)*n);
+    memcpy(xp, x, sizeof(size_t)*n);
+    size_t iter = 0;
+    size_t *AA=A.A;
+    size_t *IA=A.IA;
+    size_t *JA=A.JA;
+    //printf("\n begin \n");
+    #pragma acc data copyin(xp[0:n],IA[0:n+1],JA[0:m]) copyout(x[0:n])
+    {
+    while (1) {
+        iter++;
+        #pragma acc kernels
+        for (size_t i = 0;i < n; ++i) {
+            //#pragma acc parallel loop
+            for (size_t j=(IA)[i]; j < (IA)[i+1]; ++j) {
+                if (xp[JA[j]] > 0) {
+                    if (xp[i] == 0 || xp[JA[j]]+1 < x[i])
+                        x[i] = xp[JA[j]]+1;
+                }
+            }
+        }
+        if (checkEq(x, xp, n)) break;
+        else {
+            memcpy(xp, x, n);
+        }
+    }
+    }
+    //printf("total iter num=%lu\n", iter);
+    return;
+}
+
+void bfs_fast2(struct csrMat A, size_t *x, size_t n,size_t m) {
     size_t *xp = (size_t *) malloc(sizeof(size_t)*n);
     memcpy(xp, x, sizeof(size_t)*n);
     size_t iter = 0;
@@ -194,7 +233,7 @@ int main(int argc, const char * argv[]) {
     x[6] = 1;
     memcpy(xt, x, sizeof(size_t)*n);
     
-    printf("start 1");
+    //printf("start 1");
     double start = seconds();
     for (size_t z=0;z<10;z++) {
       bfs(A, xt, n);
@@ -202,7 +241,7 @@ int main(int argc, const char * argv[]) {
     }
     double end = seconds();
     printf("Basic version: %fsec\n", (double)(end-start));
-    printf("start 2");
+    //printf("start 2");
     start = seconds();
     for (size_t z=0;z<10;z++) {
       bfs_new(A, xt, n,m);
@@ -210,7 +249,7 @@ int main(int argc, const char * argv[]) {
     }
     end = seconds();
     printf("OpenAcc version: %fsec\n", (double)(end-start));
-        printf("start 3");
+        //printf("start 3");
     start = seconds();
     for (size_t z=0;z<10;z++) {
       bfs_fast(A, xt, n,m);

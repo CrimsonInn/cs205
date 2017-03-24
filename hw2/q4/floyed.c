@@ -74,7 +74,7 @@ void FloydWarshallGPU(float *A,float *result, int cA){
 	#pragma acc data copyin(A[0:cA*cA-1]) copyout(result[0:cA*cA-1])
 	{
 		for(int k=0;k<cA;k++){
-			#pragma acc parallel loop collapse(2)
+			#pragma acc kernels//parallel loop collapse(2)
 			for(int i=0;i<cA;i++){
 				for(int j=0;j<cA;j++){
 					result[i*cA+j]=min(A[i*cA+j],A[i*cA+k]+A[k*cA+j]);
