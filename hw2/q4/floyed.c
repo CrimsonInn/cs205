@@ -82,9 +82,13 @@ void FloydWarshallGPU(float *A,float *result, int cA){
 			}
 			//#pragma acc parallel num_gangs(1)
 			if (k<cA-1){
-				float *placeholder = A;
-				A= result;
-				result= placeholder;
+				//float *placeholder = A;
+				//A= result;
+				//result= placeholder;
+				#pragma acc parallel loop
+				for (size_t i=0;i<cA*cA;i++){
+					A[i]=result[i];
+				}
 			}
 		}
 	}
@@ -101,16 +105,28 @@ int checkError(const float* matrixA, const float* matrixB, size_t n) {
     }
     return 1;
 }
-
+void init(float* A, size_t n) {
+  float r;
+  for (size_t i = 0;i < n; ++i) {
+    for (size_t j = 0;j < n; ++j) {
+       if (i==j) {
+         A[i*n+j]=0.0;
+         continue;
+       }
+       r = (float)rand() / (float)RAND_MAX * 10.0;
+       A[i*n+j] = r;
+    }
+  }
+}
 int main(){
-	int cA=(1<<2);
+	int cA=(1<<6);
 	float* A , *B;
     A = (float*) malloc(sizeof(float) * cA * cA);
     B = (float*) malloc(sizeof(float) * cA * cA);
-    
- 	float coordinates_defaults[16] = {0,inf,3,inf,2,0,inf,inf,inf,7,0,1,6,inf,inf,0};
+    init(A, n);
+ 	//float coordinates_defaults[16] = {0,inf,3,inf,2,0,inf,inf,inf,7,0,1,6,inf,inf,0};
  
- 	memcpy(A, coordinates_defaults, sizeof(coordinates_defaults));
+ 	//memcpy(A, coordinates_defaults, sizeof(coordinates_defaults));
     //for (int i=0;i<cA*cA;i++){
     //	A[i]=i;
     //	B[i]=cA*cA-1-i;
@@ -123,30 +139,30 @@ int main(){
     FloydWarshallCPU(A,B,cA);
     endTime = seconds() - startTime;
     printf("CPU time %.2f",endTime);
-    printf("A:\n");
-    for (int i=0;i<cA*cA;i++){
-    	printf("%.0f ",A[i]);
-	}
-	printf("\n");
-	printf("B:\n");
-    for (int i=0;i<cA*cA;i++){
-    	printf("%.0f ",B[i]);
-	}
+    //printf("A:\n");
+    //for (int i=0;i<cA*cA;i++){
+    //	printf("%.0f ",A[i]);
+	//}
+	//printf("\n");
+	//printf("B:\n");
+    //for (int i=0;i<cA*cA;i++){
+    //	printf("%.0f ",B[i]);
+	//}
 
-	printf("GPU version:\n");
+	//printf("GPU version:\n");
 	startTime = seconds();
     FloydWarshallGPU(A,B,cA);
     endTime = seconds() - startTime;
     printf("GPU time %.2f",endTime);
-    printf("A:\n");
-    for (int i=0;i<cA*cA;i++){
-    	printf("%.0f ",A[i]);
-	}
-	printf("\n");
-	printf("B:\n");
-    for (int i=0;i<cA*cA;i++){
-    	printf("%.0f ",B[i]);
-	}
+    //printf("A:\n");
+    //for (int i=0;i<cA*cA;i++){
+    //	printf("%.0f ",A[i]);
+	//}
+	//printf("\n");
+	//printf("B:\n");
+    //for (int i=0;i<cA*cA;i++){
+    //	printf("%.0f ",B[i]);
+	//}
 
 
 
