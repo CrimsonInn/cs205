@@ -2,7 +2,16 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <string.h>
-
+#include <sys/time.h>
+#include <math.h>
+#include <time.h>
+#include <sys/time.h>
+double seconds() {
+    struct timeval tp;
+    struct timezone tzp;
+    int i = gettimeofday(&tp, &tzp);
+    return ((double)tp.tv_sec + (double)tp.tv_usec * 1.e-6);
+}
 #pragma acc routine
 void mycopy(float * to, float * from, size_t num){
 	for (size_t i=0;i<num;i++){
@@ -100,17 +109,47 @@ void APSP(float *A, size_t n) {
 	}
 }
 
+void init(float* A, size_t n) {
+  float r;
+  for (size_t i = 0;i < n; ++i) {
+    for (size_t j = 0;j < n; ++j) {
+       if (i==j) {
+         A[i*n+j]=0.0;
+         continue;
+       }
+       r = (float)rand() / (float)RAND_MAX * 10.0;
+       A[i*n+j] = r;
+    }
+  }
+}
 
 int main() {
-	float A[]={0,5,9,-1,-1,0,-1,1,1,-1,0,3,4,-1,5,0};
-	size_t n = 4;
-	#pragma acc kernels
-	{
-	APSP(A, n);}
-	for (size_t i=0;i < n;i++) {
-		for (size_t j=0;j < n;j++) {
-			printf("%f,",A[i*n+j]);
-		}
-		printf("\n");
-	}
+//	float A[]={0,5,9,-1,-1,0,-1,1,1,-1,0,3,4,-1,5,0};
+        size_t psize[]={4,6,8,10};
+        for (size_t i = 0;i < 4;++i){
+	  size_t n = psize[i];
+          printf("Problem Size: %lu\n",n); 
+          float *A = (float *) malloc(sizeof(float)*n*n);
+          init(A, n);
+          double startTime, endTime;
+          startTime = seconds();
+	  #pragma acc kernels
+	  {
+	  APSP(A, n);}
+          endTime = seconds() - startTime;
+          printf("Openacc CPU time %.2f\n", endTime);
+
+          startTime = seconds();
+	  APSP(A, n);
+          endTime = seconds() - startTime;
+          printf("GCC CPU time %.2f\n",  endTime);
+          free(A);
+        }
+        
+//	for (size_t i=0;i < n;i++) {
+//		for (size_t j=0;j < n;j++) {
+//			printf("%f,",A[i*n+j]);
+//		}
+//		printf("\n");
+//	}
 }
