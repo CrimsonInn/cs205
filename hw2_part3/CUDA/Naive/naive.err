@@ -1,0 +1,2 @@
+/var/slurmd/spool/slurmd/job83480020/slurm_script: line 19: 17725 Killed                  ./naive
+slurmstepd: error: Exceeded step memory limit at some point.

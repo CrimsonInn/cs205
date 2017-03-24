@@ -1,0 +1,18 @@
+main:
+     56, Generating implicit copyin(A[:][:])
+         Generating implicit copyout(Anew[1:4094][1:4094])
+     57, Loop is parallelizable
+     59, Loop is parallelizable
+         Accelerator kernel generated
+         Generating Tesla code
+         57, #pragma acc loop gang, vector(4) /* blockIdx.y threadIdx.y */
+         59, #pragma acc loop gang, vector(32) /* blockIdx.x threadIdx.x */
+         63, Generating implicit reduction(max:error)
+     68, Generating implicit copyout(A[1:4094][1:4094])
+         Generating implicit copyin(Anew[1:4094][1:4094])
+     69, Loop is parallelizable
+     71, Loop is parallelizable
+         Accelerator kernel generated
+         Generating Tesla code
+         69, #pragma acc loop gang, vector(4) /* blockIdx.y threadIdx.y */
+         71, #pragma acc loop gang, vector(32) /* blockIdx.x threadIdx.x */

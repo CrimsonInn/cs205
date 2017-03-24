@@ -1,0 +1,6 @@
+ --- Matrix multiplicatoin --- 
+Matrix size n is 1024
+Gang size is 16
+Vector size is 128
+tile_matmul_acc elapsed time is 2.895808 sec
+Throughput is 0.741584 GFlop/s

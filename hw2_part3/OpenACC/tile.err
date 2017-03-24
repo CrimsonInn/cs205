@@ -1,0 +1,11 @@
+PGC-S-0155-Compiler failed to translate accelerator region (see -Minfo messages): Could not find allocated-variable index for symbol (tile_OpenACC.c: 21)
+tile_matmul_acc:
+     21, Accelerator kernel generated
+         Generating Tesla code
+         24, #pragma acc loop gang, vector tile(64,64) /* blockIdx.x threadIdx.x */
+         25,   /* blockIdx.x threadIdx.x tiled */
+         28, #pragma acc loop seq
+     24, Accelerator restriction: size of the GPU copy of mat_a,mat_c is unknown
+     28, Accelerator restriction: size of the GPU copy of mat_b is unknown
+         Loop is parallelizable
+PGC/x86-64 Linux 16.10-0: compilation completed with severe errors
