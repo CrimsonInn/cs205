@@ -125,31 +125,30 @@ void init(float* A, size_t n) {
 
 int main() {
 //	float A[]={0,5,9,-1,-1,0,-1,1,1,-1,0,3,4,-1,5,0};
-        size_t psize[]={4,6,8,10};
+        //float *A = (float *) malloc(sizeof(float)*8*8);
+        size_t psize[]= {1024, 1024, 256,64};
         for (size_t i = 0;i < 4;++i){
 	  size_t n = psize[i];
           printf("Problem Size: %lu\n",n); 
           float *A = (float *) malloc(sizeof(float)*n*n);
-          init(A, n);
           double startTime, endTime;
+          init(A, n);
           startTime = seconds();
-	  #pragma acc kernels
-	  {
-	  APSP(A, n);}
+	  for (size_t j=0;j<1;j++){
+    	    #pragma acc kernels
+    	    {
+    	    APSP(A, n);}
+	  }
           endTime = seconds() - startTime;
-          printf("Openacc CPU time %.2f\n", endTime);
+          printf("Openacc %.4fMFLOPs \n", 2*n*n*n/endTime/(1<<20));
 
-          startTime = seconds();
-	  APSP(A, n);
-          endTime = seconds() - startTime;
-          printf("GCC CPU time %.2f\n",  endTime);
+          //init(A, n);
+          //startTime = seconds();
+	  //for (size_t j=0;j<1;j++)
+	  //  APSP(A, n);
+          //endTime = seconds() - startTime;
+          //printf("Serial FLOPs %.4fms\n", 2*n*n*n/endTime);
           free(A);
         }
         
-//	for (size_t i=0;i < n;i++) {
-//		for (size_t j=0;j < n;j++) {
-//			printf("%f,",A[i*n+j]);
-//		}
-//		printf("\n");
-//	}
 }
