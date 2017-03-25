@@ -74,17 +74,15 @@ void FloydWarshallGPU(float *A,float *result, int cA){
 	#pragma acc data copyin(A[0:cA*cA-1]) copyout(result[0:cA*cA-1])
 	{
 		for(int k=0;k<cA;k++){
-			#pragma acc kernels//parallel loop collapse(2)
+			#pragma acc kernels
 			for(int i=0;i<cA;i++){
 				for(int j=0;j<cA;j++){
 					result[i*cA+j]=min(A[i*cA+j],A[i*cA+k]+A[k*cA+j]);
 				}
 			}
-			//#pragma acc parallel num_gangs(1)
+
 			if (k<cA-1){
-				//float *placeholder = A;
-				//A= result;
-				//result= placeholder;
+
 				#pragma acc parallel loop
 				for (size_t i=0;i<cA*cA;i++){
 					A[i]=result[i];
@@ -123,7 +121,7 @@ int main(){
 	float* A , *B;
     A = (float*) malloc(sizeof(float) * cA * cA);
     B = (float*) malloc(sizeof(float) * cA * cA);
-    init(A, n);
+    init(A, cA);
  	//float coordinates_defaults[16] = {0,inf,3,inf,2,0,inf,inf,inf,7,0,1,6,inf,inf,0};
  
  	//memcpy(A, coordinates_defaults, sizeof(coordinates_defaults));
