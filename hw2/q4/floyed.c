@@ -38,35 +38,27 @@ void mySwap(int *A, int *B, int cA){
 
 
 void FloydWarshallCPU(float *A,float *result, int cA){
-	float *tmp;
-	tmp = (float*) malloc(sizeof(float) * cA * cA);
-	for(int i=0;i<cA;i++){
-		for (int j=0;j<cA;j++){
-			tmp[i*cA+j]=A[i*cA+j];
-		}
-	}
+	
+	{
+		for(int k=0;k<cA;k++){
+			
+			for(int i=0;i<cA;i++){
+				for(int j=0;j<cA;j++){
+					result[i*cA+j]=min(A[i*cA+j],A[i*cA+k]+A[k*cA+j]);
+				}
+			}
 
-	for(int k=0;k<cA;k++){
-		for(int i=0;i<cA;i++){
-			for(int j=0;j<cA;j++){
-				result[i*cA+j]=min(tmp[i*cA+j],tmp[i*cA+k]+tmp[k*cA+j]);
+			if (k<cA-1){
+
+				
+				for (size_t i=0;i<cA*cA;i++){
+					A[i]=result[i];
+				}
 			}
 		}
-		if (k<cA-1){
-			float *placeholder = tmp;
-			tmp= result;
-			result= placeholder;
-		}
-	}
-	//if ca%2==0, then result is now pointing to tmp
-	if(cA%2==0){
-		for(int i=0;i<cA;i++){
-		for (int j=0;j<cA;j++){
-			tmp[i*cA+j]=result[i*cA+j];
-		}
-	}
 	}
 }
+
 
 
 void FloydWarshallGPU(float *A,float *result, int cA){
